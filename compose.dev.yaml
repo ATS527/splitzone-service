@@ -1,26 +1,29 @@
 services:
-  oracle-db:
-    image: gvenzl/oracle-free:23-slim
-    container_name: splitzone-oracle-db
+  postgres-db:
+    image: postgres:18-alpine
+    container_name: splitzone-postgres-db
     ports:
-      - "1521:1521"
+      - "5432:5432"
     environment:
-      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
-      ORACLE_DATABASE: ${ORACLE_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      APP_DB: ${APP_DB}
       APP_USER: ${APP_USER}
       APP_USER_PASSWORD: ${APP_USER_PASSWORD}
+      TEST_APP_DB: ${TEST_APP_DB}
       TEST_APP_USER: ${TEST_APP_USER}
       TEST_APP_USER_PASSWORD: ${TEST_APP_USER_PASSWORD}
     volumes:
-      - oracle-dev-data:/opt/oracle/oradata
-      - ./container/oracle/initdb:/container-entrypoint-initdb.d:ro
-    user: "54321:54321"
+      - postgres-dev-data:/var/lib/postgresql/data
+      - ./container/postgres/initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "healthcheck.sh"]
-      interval: 30s
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
       timeout: 10s
       retries: 10
-      start_period: 120s
+      start_period: 30s
 
 volumes:
-  oracle-dev-data:
+  postgres-dev-data:
