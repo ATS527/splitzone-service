@@ -25,7 +25,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest
+@SpringBootTest(
+    properties = [
+        "spring.autoconfigure.exclude=" + 
+            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration," + 
+            "org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration"
+    ]
+)
 @AutoConfigureMockMvc
 @Import(GlobalExceptionHandlerTest.TestController::class)
 class GlobalExceptionHandlerTest {
